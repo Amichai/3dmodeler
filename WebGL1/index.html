@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebGL by DuoCode</title>
+  <link href="console.css" rel="stylesheet" type="text/css">
+
+  <script type="text/javascript" src="glMatrix-0.9.5.min.js"></script>
+  <!-- assembly references (ordered by dependency) -->
+  <script type="text/javascript" src="scripts/mscorlib.js"></script>
+  <script type="text/javascript" src="scripts/WebGL.js"></script>
+
+  <!-- Fragment shader program -->
+  <script id="shader-fs" type="x-shader/x-fragment">
+    varying highp vec2 vTextureCoord;
+    varying highp vec3 vLighting;
+    uniform sampler2D uSampler;
+
+    void main(void) {
+      highp vec4 texColor = texture2D(uSampler, vTextureCoord);
+
+      gl_FragColor = vec4(texColor.rgb * vLighting, texColor.a);
+    }
+  </script>
+
+  <!-- Vertex shader program -->
+  <script id="shader-vs" type="x-shader/x-vertex">
+    attribute highp vec3 aVertexNormal;
+    attribute highp vec3 aVertexPosition;
+    attribute highp vec2 aTextureCoord;
+
+    uniform highp mat3 uNMatrix;
+    uniform highp mat4 uMVMatrix;
+    uniform highp mat4 uPMatrix;
+
+    varying highp vec2 vTextureCoord;
+    varying highp vec3 vLighting;
+
+    void main(void) {
+      gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+      vTextureCoord = aTextureCoord;
+
+      // Apply lighting effect
+      highp vec3 ambientLight          = vec3(0.3, 0.3, 0.3);
+      highp vec3 directionalLightColor = vec3(0.5, 0.5, 0.75);
+      highp vec3 directionalVector     = vec3(0.85, 0.8, 0.75);
+
+      highp vec3 transformedNormal = uNMatrix * aVertexNormal;
+
+      highp float directional = max(dot(transformedNormal, directionalVector), 0.0);
+      vLighting = ambientLight + (directionalLightColor * directional);
+    }
+  </script>
+</head>
+<body onload="WebGL.Program.Run()">
+  <canvas id="canvas" width="640" height="480">
+    Your browser doesn't appear to support the HTML5 <code>&lt;canvas&gt;</code> element.
+  </canvas>
+  <div id="duocode-console">
+<font color="darkblue">This is a sample of a project written in C# and compiled to JavaScript using DuoCode.
+Press F12 to see the source code of the project.
+Enable source-maps in your browser and you'll be able to debug the C# code directly.
+You can also debug it in Visual Studio 2013 or 2015 with Internet Explorer.</font>
+<hr /></div>
+</body>
+</html>
