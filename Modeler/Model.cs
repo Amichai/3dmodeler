@@ -6,12 +6,27 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Modeler {
-    class Model {
+    public class Model {
+        private Model() {
+
+        }
         private ListHash<Edge> edges = new ListHash<Edge>();
         private List<Face> faces = new List<Face>();
         private List<Vec3> vertices = new List<Vec3>();
         private Dictionary<int, List<Face>> vertexToFace = new Dictionary<int, List<Face>>();
         private Dictionary<int, List<Edge>> vertexToEdge = new Dictionary<int, List<Edge>>();
+
+        public List<int> FaceTriangleIndices {
+            get {
+                return this.faces.SelectMany(i => i.GetTriangleIndices).ToList();
+            }
+        }
+
+        public List<Vec3> Vertices {
+            get {
+                return this.vertices;
+            }
+        }
 
         public void AddEdge(Edge e) {
             if (this.edges.Contains(e)) {
@@ -27,6 +42,15 @@ namespace Modeler {
         public void Normalize() {
             var maxDist = this.vertices.Max(i => i.Mag());
             vertices = vertices.Select(i => i /= maxDist).ToList();
+        }
+
+        private void addFaceVert(Face f, int v) {
+            List<Face> faces;
+            if (this.vertexToFace.TryGetValue(v, out faces)) {
+                faces.Add(f);
+            } else {
+                this.vertexToFace[v] = new List<Face>() { f };
+            }
         }
 
         private void addEdgeVert(Edge e, int v1) {
@@ -54,7 +78,21 @@ namespace Modeler {
         }
 
         public static Model ConstructFromVerticesAndIndices(List<Vec3> vertices, params List<int>[] indices) {
-            throw new NotImplementedException();
+            Model toReturn = new Model();
+            toReturn.vertices = vertices;
+            foreach (var faceSet in indices) {
+                var newFace = new Face(faceSet);
+                toReturn.faces.Add(newFace);
+                for (int i = 0; i < faceSet.Count; i++) {
+                    var idx1 = i;
+                    var idx2 = (i + 1) % faceSet.Count;
+                    var e = new Edge(idx1, idx2);
+                    toReturn.edges.Add(e);
+                    toReturn.addEdgeVert(e, i);
+                    toReturn.addFaceVert(newFace, i);
+                }
+            }
+            return toReturn;
         }
 
         public static Model ConstructFromFaces(List<Face> faces) {
@@ -78,19 +116,50 @@ namespace Modeler {
                 new Vec3(1, -1, 1),
                 new Vec3(1, 1, -1),
             };
-            Model.ConstructFromVerticesAndIndices(vertices, 
-                new List<int> { 0, 1, 2, 3 }, 
-                new List<int> { 4, 5, 6, 7 },
-                new List<int> { 0, 1, 4, 5 },
-                new List<int> { 2, 3, 6, 7 },
-                new List<int> { 1, 2, 5, 6 },
-                new List<int> { 3, 0, 4, 7 }
+            return Model.ConstructFromVerticesAndIndices(vertices,
+                new List<int> { 0, 1, 2, 3 },
+                new List<int> { 7, 6, 5, 4 },
+                new List<int> { 6, 0, 2, 4 },
+                new List<int> { 5, 3, 7, 1 },
+                new List<int> { 1, 6, 2, 5 },
+                new List<int> { 7, 0, 4, 3 }
                 );
-            throw new NotImplementedException();
         }
     }
 
-    class Face {
+    public class Face {
+        public Face(List<int> vertices) {
+            this.vertices = vertices;
+        }
+
+        public List<int> GetVertexIndices {
+            get {
+                return this.vertices;
+            }
+        }
+
+        public List<int> GetTriangleIndices {
+            get {
+                if (this.vertices.Count == 3) {
+                    return this.vertices;
+                }
+                List<int> toReturn = new List<int>();
+                int offest = 0;
+                for (int i = 0; i < this.vertices.Count; i++) {
+                    int sourceIdx = 0 + offest;
+                    int idx1 = (i) % this.vertices.Count;
+                    int idx2 = (1 + 2 * i) % this.vertices.Count;
+                    if (sourceIdx == idx1 || sourceIdx == idx2) {
+                        continue;
+                    }
+                    toReturn.Add(vertices[sourceIdx]);
+                    toReturn.Add(vertices[idx1]);
+                    toReturn.Add(vertices[idx2]);
+                }
+                return toReturn;
+            }
+        }
+
         private List<int> vertices = new List<int>();
         public List<Edge> GetEdges() {
             List<Edge> toReturn = new List<Edge>();
@@ -103,7 +172,7 @@ namespace Modeler {
         }
     }
 
-    class Edge {
+    public class Edge {
         public Edge(int a, int b) {
             this.Vert1 = a;
             this.Vert2 = b;
@@ -114,7 +183,11 @@ namespace Modeler {
         public static bool operator ==(Edge e1, Edge e2) {
             return e1.Vert1 == e2.Vert1 && e1.Vert2 == e2.Vert2;
         }
-        
+
+        public static bool operator !=(Edge e1, Edge e2) {
+            return !(e1 == e2);
+        }
+
         // override object.Equals
         public override bool Equals(object obj) {
             if (obj == null || GetType() != obj.GetType()) {

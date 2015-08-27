@@ -5,8 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Modeler {
-    struct Vec3 {
-        public Vec3(double x, double y, double z) {
+    public struct Vec3 {
+        public Vec3(double x, double y, double z) : this() {
             this.X = x;
             this.Y = y;
             this.Z = z;
@@ -21,6 +21,10 @@ namespace Modeler {
 
         public static bool operator==(Vec3 a, Vec3 b)   {
             return a.X == b.X && a.Y == b.Y && a.Z == b.Z;
+        }
+
+        public static bool operator !=(Vec3 a, Vec3 b) {
+            return !(a == b);
         }
 
         // override object.Equals
