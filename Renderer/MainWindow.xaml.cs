@@ -23,13 +23,15 @@ namespace Renderer {
     /// </summary>
     public partial class MainWindow : Window {
         public MainWindow() {
-            Model model = Model.Cube();
+            this.model = Model.Cube();
             this.scene = new FullScene();
-            scene.Add(model);
+            scene.Add(this.model);
             InitializeComponent();
             this.viewRoot.Children.Add(scene.Viewport);
+            sm.SetState(new ElevateState(this.model));
         }
 
+        private Model model;
         private FullScene scene;
 
         private bool dragging = false;
@@ -50,6 +52,18 @@ namespace Renderer {
                 this.lastMousePosition = currentPosition;
                 this.scene.RotateModel(diff.X, diff.Y);
             }
+        }
+
+        private StateMachine sm = new StateMachine();
+
+        private void ExtrudeState_Click(object sender, RoutedEventArgs e) {
+            sm.SetState(new ElevateState(this.model));
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+            sm.SetSliderValue(e.NewValue);
+            var toDraw = sm.GetModel();
+           this.scene.DrawModel(toDraw);
         }
     }
 }

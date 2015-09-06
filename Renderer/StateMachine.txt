@@ -1,0 +1,12 @@
+﻿
+
+- Shape menu
+ - Manipulation menu
+	- Extrude (select a face)
+	- Expand
+	- Snub
+	- Elevate (select a face)
+	- Truncate (select a vertex)
+ - Stylization menu
+	- Framework edge (select a face)
+	- Face color (select a face)

@@ -7,14 +7,18 @@ using System.Threading.Tasks;
 
 namespace Modeler {
     public class Model {
-        private Model() {
-
-        }
+        private Model() { }
         private ListHash<Edge> edges = new ListHash<Edge>();
         private List<Face> faces = new List<Face>();
         private List<Vec3> vertices = new List<Vec3>();
         private Dictionary<int, List<Face>> vertexToFace = new Dictionary<int, List<Face>>();
         private Dictionary<int, List<Edge>> vertexToEdge = new Dictionary<int, List<Edge>>();
+
+        public List<Face> Faces {
+            get {
+                return this.faces;
+            }
+        }
 
         public List<int> FaceTriangleIndices {
             get {
@@ -81,7 +85,7 @@ namespace Modeler {
             Model toReturn = new Model();
             toReturn.vertices = vertices;
             foreach (var faceSet in indices) {
-                var newFace = new Face(faceSet);
+                var newFace = new Face(faceSet, toReturn);
                 toReturn.faces.Add(newFace);
                 for (int i = 0; i < faceSet.Count; i++) {
                     var idx1 = i;
@@ -125,17 +129,68 @@ namespace Modeler {
                 new List<int> { 7, 0, 4, 3 }
                 );
         }
+
+        public Vec3 GetFaceCenter(Face faceToExtrude) {
+            return LinearAlgebra.GetCenter(faceToExtrude.GetVertexPositions());            
+        }
+
+        public int AddVertex(Vec3 newVertex) {
+            this.vertices.Add(newVertex);
+            return this.vertices.Count - 1;
+        }
+
+        public void AddFace(params int[] indices) {
+            this.faces.Add(new Face(indices.ToList(), this));
+        }
+
+        public void RemoveFace(Face face) {
+            this.faces.Remove(face);
+        }
+
+        public Model Clone() {
+            Model toReturn = new Model();
+            toReturn.vertices = this.vertices.Select(i => i.Clone()).ToList();
+            toReturn.vertexToEdge = this.vertexToEdge.ToDictionary(i => i.Key, i => i.Value.Select(j => j.Clone()).ToList());
+            toReturn.vertexToFace = this.vertexToFace.ToDictionary(i => i.Key, i => i.Value.Select(j => j.Clone()).ToList());
+            toReturn.edges = new ListHash<Edge>(this.edges.ToList());
+            toReturn.faces = this.faces.Select(i => i.Clone()).ToList();
+            return toReturn;
+        }
     }
 
     public class Face {
-        public Face(List<int> vertices) {
+        public Face(List<int> vertices, Model m, bool orderVertices = true) {
             this.vertices = vertices;
+            this.model = m;
+            if (orderVertices) {
+                Dictionary<Vec3, int> mapping = new Dictionary<Vec3, int>();
+                for (int i = 0; i < vertices.Count; i++) {
+                    int idx = vertices[i];
+                    mapping[this.getVertexPosition(idx)] = idx;
+                }
+                var ordered = LinearAlgebra.OrderVertices(this.GetVertexPositions());
+                this.vertices = ordered.Select(i => mapping[i]).ToList();
+            }
         }
 
-        public List<int> GetVertexIndices {
+        private Model model;
+
+        private Vec3 getVertexPosition(int idx) {
+            return this.model.Vertices[idx];
+        }
+
+        public List<Vec3> GetVertexPositions() {
+            return this.vertices.Select(i => this.model.Vertices[i]).ToList();
+        }
+
+        public int VertexCount {
             get {
-                return this.vertices;
+                return this.vertices.Count;
             }
+        }
+
+        public List<int> GetVertexIndices() {
+            return this.vertices;
         }
 
         public List<int> GetTriangleIndices {
@@ -144,14 +199,10 @@ namespace Modeler {
                     return this.vertices;
                 }
                 List<int> toReturn = new List<int>();
-                int offest = 0;
-                for (int i = 0; i < this.vertices.Count; i++) {
-                    int sourceIdx = 0 + offest;
-                    int idx1 = (i) % this.vertices.Count;
-                    int idx2 = (1 + 2 * i) % this.vertices.Count;
-                    if (sourceIdx == idx1 || sourceIdx == idx2) {
-                        continue;
-                    }
+                int sourceIdx = 0;
+                for (int i = 0; i < this.vertices.Count - 2; i++) {
+                    int idx1 = 1 + i;
+                    int idx2 = 2 + i;
                     toReturn.Add(vertices[sourceIdx]);
                     toReturn.Add(vertices[idx1]);
                     toReturn.Add(vertices[idx2]);
@@ -169,6 +220,10 @@ namespace Modeler {
                 toReturn.Add(e);
             }
             return toReturn;
+        }
+
+        internal Face Clone() {
+            return new Face(this.vertices.ToList(), this.model, orderVertices:false);
         }
     }
 
@@ -200,6 +255,10 @@ namespace Modeler {
 
         public override int GetHashCode() {
             return this.Vert1.GetHashCode() ^ this.Vert2.GetHashCode();
+        }
+
+        internal Edge Clone() {
+            return new Edge(this.Vert1, this.Vert2);
         }
     }
 }

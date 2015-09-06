@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace Modeler {
     class ListHash<T> : IList<T> {
+        public ListHash() {
+
+        }
+        public ListHash(IEnumerable<T> source) {
+            foreach (var s in source) {
+                this.Add(s);
+            }
+        }
+
         private List<T> vals = new List<T>();
         private HashSet<T> valHash = new HashSet<T>();
         public int IndexOf(T item) {

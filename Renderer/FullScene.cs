@@ -40,13 +40,20 @@ namespace Renderer {
         public Viewport3D Viewport { get; private set; }
         GeometryModel3D geometry;
 
+        public void DrawModel(Model model) {
+            this.modelGroup.Children.Remove(this.geometry);
+            this.Add(model);
+        }
+
+        private MeshGeometry3D mesh;
+
         public void Add(Model model) {
-            MeshGeometry3D frontMesh = new MeshGeometry3D();
-            frontMesh.Positions = new Point3DCollection(model.Vertices.Select(i => new Point3D(i.X, i.Y, i.Z)));
-            frontMesh.TriangleIndices = new Int32Collection(model.FaceTriangleIndices);
+            this.mesh = new MeshGeometry3D();
+            this.mesh.Positions = new Point3DCollection(model.Vertices.Select(i => new Point3D(i.X, i.Y, i.Z)));
+            this.mesh.TriangleIndices = new Int32Collection(model.FaceTriangleIndices);
             this.geometry = new GeometryModel3D();
-            geometry.Geometry = frontMesh;
-            this.modelGroup.Children.Add(geometry);
+            this.geometry.Geometry = this.mesh;
+            this.modelGroup.Children.Add(this.geometry);
 
             // *** Material ***
             DiffuseMaterial diffTransYellow =
