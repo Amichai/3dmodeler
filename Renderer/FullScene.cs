@@ -130,6 +130,7 @@ namespace Renderer {
             material.Children.Add(mat);
 
             geometry.Material = material;
+            geometry.BackMaterial = material;
         }
 
         private void setRotation() {

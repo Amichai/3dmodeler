@@ -163,19 +163,17 @@ namespace Modeler {
     }
 
     public class Face {
-        public Face(List<int> vertices, Model m, bool orderVertices = true) {
+        public Face(List<int> vertices, Model m) {
             this.vertices = vertices;
             this.model = m;
-            if (orderVertices && false) {
-                Dictionary<Vec3, int> mapping = new Dictionary<Vec3, int>();
-                for (int i = 0; i < vertices.Count; i++) {
-                    int idx = vertices[i];
-                    mapping[this.getVertexPosition(idx)] = idx;
-                }
-                var ordered = LinearAlgebra.OrderVertices(this.GetVertexPositions());
-                this.vertices = ordered.Select(i => mapping[i]).ToList();
-                this.vertices.Reverse();
+
+            Dictionary<Vec3, int> mapping = new Dictionary<Vec3, int>();
+            for (int i = 0; i < vertices.Count; i++) {
+                int idx = vertices[i];
+                mapping[this.getVertexPosition(idx)] = idx;
             }
+            var ordered = LinearAlgebra.OrderVertices(this.GetVertexPositions());
+            this.vertices = ordered.Select(i => mapping[i]).ToList();
         }
 
         private Model model;
@@ -228,7 +226,7 @@ namespace Modeler {
         }
 
         internal Face Clone() {
-            return new Face(this.vertices.ToList(), this.model, orderVertices:false);
+            return new Face(this.vertices.ToList(), this.model);
         }
 
         public Vec3 GetNormal() {
