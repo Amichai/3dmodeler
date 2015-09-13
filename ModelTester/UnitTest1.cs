@@ -8,7 +8,7 @@ namespace ModelTester {
     [TestClass]
     public class ModelTest {
         [TestMethod]
-        public void TestConvexHull() {
+        public void TestOrederVertices1() {
             var vertices = new List<Vec3>() { 
                 new Vec3(-1, -1, -1),
                 new Vec3(-1, 1, 1),
@@ -16,24 +16,29 @@ namespace ModelTester {
                 new Vec3(-1, 1, -1),
             };
             var result = LinearAlgebra.OrderVertices(vertices);
-            return;
-            var m = Model.Cube();
-            //foreach (var f in m.Faces) {
-            //    var indices = f.GetVertexIndices();
-            //    Debug.Print(string.Join(", ", indices));
-            //}
-
-            var newFace = new Face(new List<int> { 0, 1, 2, 3}, m);
-            var a = newFace.GetVertexIndices();
-            var positions = newFace.GetVertexPositions();
-            foreach (var idx in a) {
-                var p = positions[idx];
-                Debug.Print(p.ToString());
+            for (int i = 0; i < 4; i++) {
+                var a = result[i];
+                var b = result[(i + 1) % 4];
+                var totalDiff = a - b;
+                Assert.IsTrue(totalDiff.Mag() <= 2);
             }
-            
-            newFace = new Face(new List<int> { 0, 1, 3, 2 }, m);
-            var b = newFace.GetVertexIndices();
+        }
 
+        [TestMethod]
+        public void TestOrederVertices2() {
+            var vertices = new List<Vec3>() { 
+                new Vec3(0, 1, 1),
+                new Vec3(0, -1, 1),
+                new Vec3(0, -1, -1),
+                new Vec3(0, 1, -1),
+            };
+            var result = LinearAlgebra.OrderVertices(vertices);
+            for (int i = 0; i < 4; i++) {
+                var a = result[i];
+                var b = result[(i + 1) % 4];
+                var totalDiff = a - b;
+                Assert.IsTrue(totalDiff.Mag() <= 2);
+            }
         }
     }
 }

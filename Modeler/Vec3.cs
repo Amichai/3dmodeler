@@ -15,19 +15,27 @@ namespace Modeler {
         public double Y { get; private set; }
         public double Z { get; private set; }
 
-        public static Vec3 operator /(Vec3 a, double b) {
+        public static Vec3 operator/(Vec3 a, double b) {
             return new Vec3(a.X / b, a.Y / b, a.Z / b);
         }
 
-        public static Vec3 operator *(Vec3 a, double b) {
+        public static Vec3 operator*(Vec3 a, double b) {
             return new Vec3(a.X * b, a.Y * b, a.Z * b);
+        }
+
+        public static Vec3 operator +(Vec3 a, Vec3 b) {
+            return new Vec3(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
+        }
+
+        public static Vec3 operator-(Vec3 a, Vec3 b) {
+            return new Vec3(a.X - b.X, a.Y - b.Y, a.Z - b.Z);
         }
 
         public static bool operator==(Vec3 a, Vec3 b)   {
             return a.X == b.X && a.Y == b.Y && a.Z == b.Z;
         }
 
-        public static bool operator !=(Vec3 a, Vec3 b) {
+        public static bool operator!=(Vec3 a, Vec3 b) {
             return !(a == b);
         }
 
@@ -77,6 +85,10 @@ namespace Modeler {
             double y = this.Z * v.X - this.X * v.Z;
             double z = this.X * v.Y - this.Y * v.X;
             return new Vec3(x, y, z);
+        }
+
+        internal double DotProduct(Vec3 vec3) {
+            return this.X * vec3.X + this.Y * vec3.Y + this.Z * vec3.Z;
         }
     }
 }

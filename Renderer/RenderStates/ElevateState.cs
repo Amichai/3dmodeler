@@ -22,7 +22,7 @@ namespace Renderer {
         }
 
         void s_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e) {
-            this.SetSliderValue(e.NewValue);
+            this.setSliderValue(e.NewValue);
             this.draw();
         }
 
@@ -40,7 +40,7 @@ namespace Renderer {
 
         private Model toRender;
 
-        public void SetSliderValue(double val) {
+        private void setSliderValue(double val) {
             this.toRender = this.modelClone.Clone();
             this.faceToElevate = this.toRender.Faces.First();
             this.faceCenter = this.toRender.GetFaceCenter(this.faceToElevate);
@@ -54,7 +54,6 @@ namespace Renderer {
                 int vIndex = this.toRender.AddVertex(newVertex);
                 this.toRender.AddFace(idx1, idx2, vIndex);
                 this.toRender.AddFace(vIndex, idx2, idx1);
-
             }
             //Get the center of the face
             //Determine the new vertex position

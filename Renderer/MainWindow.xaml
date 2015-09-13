@@ -12,7 +12,8 @@
         <Grid Name="viewRoot" Grid.Column="1">
         </Grid>
         <StackPanel VerticalAlignment="Center">
-            <Button Click="ExtrudeState_Click">Elevate State</Button>
+            <Button Click="ElevateState_Click">Elevate State</Button>
+            <Button Click="ExtrudeState_Click">Extrude State</Button>
             <Button Click="LightingState_Click">Lighting State</Button>
             <Button>Button3</Button>
         </StackPanel>

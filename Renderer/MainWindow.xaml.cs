@@ -57,7 +57,7 @@ namespace Renderer {
 
         private StateMachine sm;
 
-        private void ExtrudeState_Click(object sender, RoutedEventArgs e) {
+        private void ElevateState_Click(object sender, RoutedEventArgs e) {
             sm.SetState(new ElevateState(this.model));
         }
 
@@ -73,6 +73,10 @@ namespace Renderer {
 
         private void LightingState_Click(object sender, RoutedEventArgs e) {
             sm.SetState(new LightingState(this.model, this.scene));
+        }
+
+        private void ExtrudeState_Click(object sender, RoutedEventArgs e) {
+            sm.SetState(new ExtrudeState(this.model, this.scene));
         }
     }
 }

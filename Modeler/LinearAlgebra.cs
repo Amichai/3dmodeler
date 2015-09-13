@@ -37,12 +37,15 @@ namespace Modeler {
         }
 
         private class comparer : IComparer<Vec3> {
-            private Vec3 center;
-            public comparer(Vec3 center) {
+            private Vec3 center, n;
+            public comparer(Vec3 center, Vec3 normal) {
                 this.center = center;
+                this.n = normal;
             }
             public int Compare(Vec3 x, Vec3 y) {
-                var det = x.CrossProduct(y).Mag();
+                var a = x - center;
+                var b = y - center;
+                var det = this.n.DotProduct(a.CrossProduct(b));
                 if (det < 0)
                     return 1;
                 else if (det > 0)
@@ -50,9 +53,20 @@ namespace Modeler {
                 return 0;
             }
         }
-        public static List<Vec3> OrderVertices(List<Vec3> vertices) {
+
+        public static Vec3 GetNormal(Vec3 v1, Vec3 v2, Vec3 v3) {
+            var a = v2 - v1;
+            var b = v3 - v2;
+            var cross = a.CrossProduct(b);
+            return cross.Normamlized();
+        }
+
+        public static List<Vec3> OrderVertices(List<Vec3> vertices, Vec3? normal = null) {
             Vec3 centerPt = GetCenter(vertices);
-            return vertices.OrderBy(i => i, new comparer(centerPt)).ToList();
+            if (normal == null) {
+                normal = GetNormal(vertices[0], vertices[1], vertices[2]);
+            }
+            return vertices.OrderBy(i => i, new comparer(centerPt, normal.Value)).ToList();
         }
     }
 }
