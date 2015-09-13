@@ -108,6 +108,7 @@ namespace Renderer {
         public void DrawModel(Model model) {
             this.modelGroup.Children.Remove(this.geometry);
             this.Add(model);
+            this.setRotation();
         }
 
         private MeshGeometry3D mesh;
@@ -131,29 +132,32 @@ namespace Renderer {
             geometry.Material = material;
         }
 
-        private double lastAngleX = 0, lastAngleY = 0;
-        public void RotateModel(double dx, double dy) {
+        private void setRotation() {
             var rotations = new Transform3DCollection();
             var transformGroup = new Transform3DGroup() {
                 Children = rotations
             };
 
             geometry.Transform = transformGroup;
-
-            lastAngleX -= dx / 10;
             rotations.Add(new RotateTransform3D(
                 new QuaternionRotation3D(
                     new Quaternion(new Vector3D(0, 1, 0), lastAngleX)
                     )
                 )
             );
-            lastAngleY -= dy / 10;
             rotations.Add(new RotateTransform3D(
                 new QuaternionRotation3D(
                     new Quaternion(new Vector3D(1, 0, 0), lastAngleY)
                     )
                 )
            );
+        }
+
+        private double lastAngleX = 0, lastAngleY = 0;
+        public void RotateModel(double dx, double dy) {
+            lastAngleX -= dx / 10;
+            lastAngleY -= dy / 10;
+            this.setRotation();
         }
     }
 }
