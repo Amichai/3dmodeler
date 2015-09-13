@@ -156,6 +156,10 @@ namespace Modeler {
             toReturn.faces = this.faces.Select(i => i.Clone()).ToList();
             return toReturn;
         }
+
+        public void Scale(double p) {
+            vertices = vertices.Select(i => i /= p).ToList();
+        }
     }
 
     public class Face {

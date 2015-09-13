@@ -5,11 +5,25 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Renderer {
     public class ElevateState : RendererStateBase {
         public ElevateState(Model m) {
             this.modelClone = m.Clone();
+            var s = new Slider() {
+                Minimum = -100,
+                Maximum = 100,
+                Value = 0,
+                Orientation = Orientation.Vertical
+            };
+            s.ValueChanged += s_ValueChanged;
+            this.Widgets.Add(s);
+        }
+
+        void s_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e) {
+            this.SetSliderValue(e.NewValue);
+            this.draw();
         }
 
         private Face faceToElevate;
@@ -26,7 +40,7 @@ namespace Renderer {
 
         private Model toRender;
 
-        public override void SetSliderValue(double val) {
+        public void SetSliderValue(double val) {
             this.toRender = this.modelClone.Clone();
             this.faceToElevate = this.toRender.Faces.First();
             this.faceCenter = this.toRender.GetFaceCenter(this.faceToElevate);

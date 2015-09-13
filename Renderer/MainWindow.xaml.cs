@@ -1,4 +1,5 @@
 ﻿using Modeler;
+using Renderer.RenderStates;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -28,7 +29,7 @@ namespace Renderer {
             scene.Add(this.model);
             InitializeComponent();
             this.viewRoot.Children.Add(scene.Viewport);
-            sm.SetState(new ElevateState(this.model));
+            this.sm = new StateMachine(this.widgetsRoot, this.draw);
         }
 
         private Model model;
@@ -54,16 +55,24 @@ namespace Renderer {
             }
         }
 
-        private StateMachine sm = new StateMachine();
+        private StateMachine sm;
 
         private void ExtrudeState_Click(object sender, RoutedEventArgs e) {
             sm.SetState(new ElevateState(this.model));
         }
 
-        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
-            sm.SetSliderValue(e.NewValue);
+        private void draw() {
             var toDraw = sm.GetModel();
-           this.scene.DrawModel(toDraw);
+            this.scene.DrawModel(toDraw);
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e) {
+            var toDraw = sm.GetModel();
+            this.scene.DrawModel(toDraw);
+        }
+
+        private void LightingState_Click(object sender, RoutedEventArgs e) {
+            sm.SetState(new LightingState(this.model, this.scene));
         }
     }
 }

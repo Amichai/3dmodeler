@@ -4,19 +4,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace Renderer {
     class StateMachine {
-        private RendererStateBase currentState;
-        public void SetState(RendererStateBase newState) {
-            this.currentState = newState;
+        public StateMachine(Grid grid, Action draw) {
+            this.widgetsRoot = grid;
+            this.draw = draw;
         }
 
-        internal void SetSliderValue(double val) {
-            if (this.currentState == null) {
-                return;
+        private Action draw;
+        private Grid widgetsRoot;
+
+        private RendererStateBase currentState;
+        public void SetState(RendererStateBase newState) {
+            this.widgetsRoot.Children.Clear();
+            foreach (var w in newState.Widgets) {
+                this.widgetsRoot.Children.Add(w);
             }
-            this.currentState.SetSliderValue(val);
+            this.currentState = newState;
+            this.currentState.draw = this.draw;
         }
 
         internal Model GetModel() {

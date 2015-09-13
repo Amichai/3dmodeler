@@ -53,9 +53,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ElevateState.cs" />
-    <Compile Include="RendererStateBase.cs" />
+    <Compile Include="RenderStates\ElevateState.cs" />
+    <Compile Include="RenderStates\LightingState.cs" />
+    <Compile Include="RenderStates\RendererStateBase.cs" />
     <Compile Include="StateMachine.cs" />
+    <Compile Include="WidgetFactory.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
