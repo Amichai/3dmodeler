@@ -17,6 +17,7 @@
             <Button Click="LightingState_Click">Lighting State</Button>
             <Button>Button3</Button>
         </StackPanel>
+        <Button Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="10" Padding="10 5 10 5" Click="Commit_Click">Commit</Button>
         <Grid Grid.Column="2" Name="widgetsRoot">
         </Grid>
     </Grid>

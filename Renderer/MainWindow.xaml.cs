@@ -24,16 +24,17 @@ namespace Renderer {
     /// </summary>
     public partial class MainWindow : Window {
         public MainWindow() {
-            this.model = Model.Cube();
+            var model = Model.Cube();
             this.scene = new FullScene();
-            scene.Add(this.model);
+            this.scene.Add(model);
             InitializeComponent();
             this.viewRoot.Children.Add(scene.Viewport);
             this.sm = new StateMachine(this.widgetsRoot, this.draw);
+            this.sm.SetState(new ViewerState(model));
         }
 
-        private Model model;
         private FullScene scene;
+        private StateMachine sm;
 
         private bool dragging = false;
         private Point lastMousePosition;
@@ -52,13 +53,12 @@ namespace Renderer {
                 var diff = this.lastMousePosition - currentPosition;
                 this.lastMousePosition = currentPosition;
                 this.scene.RotateModel(diff.X, diff.Y);
+                this.sm.HandleRotationChanged(this.scene.AngleX, this.scene.AngleY);
             }
         }
 
-        private StateMachine sm;
-
         private void ElevateState_Click(object sender, RoutedEventArgs e) {
-            sm.SetState(new ElevateState(this.model));
+            this.sm.SetState(new ElevateState(this.sm.GetModel()));
         }
 
         private void draw() {
@@ -72,11 +72,15 @@ namespace Renderer {
         }
 
         private void LightingState_Click(object sender, RoutedEventArgs e) {
-            sm.SetState(new LightingState(this.model, this.scene));
+            this.sm.SetState(new LightingState(this.sm.GetModel(), this.scene));
         }
 
         private void ExtrudeState_Click(object sender, RoutedEventArgs e) {
-            sm.SetState(new ExtrudeState(this.model, this.scene));
+            this.sm.SetState(new ExtrudeState(this.sm.GetModel(), this.scene));
+        }
+
+        private void Commit_Click(object sender, RoutedEventArgs e) {
+            this.sm.Commit();
         }
     }
 }

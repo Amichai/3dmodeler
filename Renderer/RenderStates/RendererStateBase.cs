@@ -15,5 +15,9 @@ namespace Renderer {
         public List<UIElement> Widgets = new List<UIElement>();
 
         abstract internal Model GetModel();
+
+        virtual public void HandleRotationChanged(double angleX, double angleY) {
+
+        }
     }
 }

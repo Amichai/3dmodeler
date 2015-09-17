@@ -55,8 +55,10 @@
     </ApplicationDefinition>
     <Compile Include="RenderStates\ElevateState.cs" />
     <Compile Include="RenderStates\ExtrudeState.cs" />
+    <Compile Include="RenderStates\FaceSelectionState.cs" />
     <Compile Include="RenderStates\LightingState.cs" />
     <Compile Include="RenderStates\RendererStateBase.cs" />
+    <Compile Include="RenderStates\ViewerState.cs" />
     <Compile Include="StateMachine.cs" />
     <Compile Include="WidgetFactory.cs" />
     <Page Include="MainWindow.xaml">

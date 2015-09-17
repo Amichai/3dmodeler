@@ -17,6 +17,40 @@ namespace Modeler {
             return Math.Acos((ba.Sqrd() + bc.Sqrd() - ac.Sqrd()) / (2 * ba * bc));
         }
 
+        private const double EPS = 1e-9;
+        public enum SegmentPlaneIntersection { NoIntersection, SegmentLiesInPlane, Intersection };
+
+        public static SegmentPlaneIntersection PlaneVectorIntersection(Vec3 a, Vec3 b, Vec3 planeNormal, Vec3 planePoint) {
+            Vec3 u = b - a;
+            Vec3 w = a - planePoint;
+            double D = planeNormal.DotProduct(u);
+            double N = -planeNormal.DotProduct(w);
+
+            if (Math.Abs(D) < EPS) {
+                if (N == 0) {
+                    return SegmentPlaneIntersection.SegmentLiesInPlane;
+                } else {
+                    return SegmentPlaneIntersection.NoIntersection;
+                }
+            }
+            double sI = N / D;
+            if (sI < 0 || sI > 1) {
+                return SegmentPlaneIntersection.NoIntersection;
+            }
+            return SegmentPlaneIntersection.Intersection;
+        }
+
+        //http://geomalgorithms.com/a13-_intersect-4.html
+        public static SegmentPlaneIntersection PolygonVectorIntersection(Vec3 p0, Vec3 p1, Model model) {
+            throw new Exception();
+            var tE = 0;
+            var tL = 1;
+            var dS = p1 - p0;
+            foreach (var f in model.Faces) {
+                //var N = -(p0 - v)
+            }
+        }
+
         private static List<int> sortVertexIndices(List<Vec3> vertices) {
             Dictionary<int, Vec3> indexPt = new Dictionary<int, Vec3>();
             for (int i = 0; i < vertices.Count; i++) {

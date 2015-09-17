@@ -18,15 +18,15 @@ namespace Renderer.RenderStates {
 
         private void addWidgets() {
             StackPanel sp = new StackPanel();
-            sp.Children.Add(WidgetFactory.Button(
-                "Ambient Light", 
-                this.scene.ToggleLight1
-                ));
+            //sp.Children.Add(WidgetFactory.Button(
+            //    "Ambient Light", 
+            //    this.scene.ToggleLight1
+            //    ));
 
-            sp.Children.Add(WidgetFactory.Button(
-                "Directional Light",
-                this.scene.ToggleLight2
-                ));
+            //sp.Children.Add(WidgetFactory.Button(
+            //    "Directional Light",
+            //    this.scene.ToggleLight2
+            //    ));
             this.Widgets.Add(sp);
         }
 

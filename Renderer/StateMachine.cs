@@ -1,4 +1,5 @@
 ﻿using Modeler;
+using Renderer.RenderStates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,14 @@ namespace Renderer {
 
         internal Model GetModel() {
             return this.currentState.GetModel();
+        }
+
+        internal void Commit() {
+            this.SetState(new ViewerState(this.currentState.GetModel().Clone()));
+        }
+
+        internal void HandleRotationChanged(double p1, double p2) {
+            this.currentState.HandleRotationChanged(p1, p2);
         }
     }
 }
