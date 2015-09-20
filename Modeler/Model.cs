@@ -173,6 +173,7 @@ namespace Modeler {
                 mapping[this.getVertexPosition(idx)] = idx;
             }
             var ordered = LinearAlgebra.OrderVertices(this.GetVertexPositions());
+            ordered.Reverse();
             this.vertices = ordered.Select(i => mapping[i]).ToList();
         }
 
